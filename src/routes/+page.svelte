@@ -1,19 +1,49 @@
 <script>
-    import {Button, Card, Modal, P, Dropdown, Radio, DropdownItem} from 'flowbite-svelte';
-    import {EditOutline, ChevronDownOutline} from 'flowbite-svelte-icons'
+    import {Button, Card, DropdownDivider, ButtonGroup, Dropdown, Input, DropdownItem, Accordion, AccordionItem} from 'flowbite-svelte';
+    import {EditOutline, ChevronDownOutline, CheckCircleOutline, ClockOutline, RectangleListOutline, ClipboardListOutline, PlusOutline} from 'flowbite-svelte-icons'
 
     let viewTaskModal = $state(false);
     let curStatus = $state("Done");
     let isOpen = $state(false);
+
+    let backlogTasks = $state([]);
+    let sprintTasks = $state([]);
+    let inProgressTasks = $state([]);
+    let doneTasks = $state([]);
+
+    let taskName = $state('')
+
+    let actionDropdownSelected = $state("Action");
+    let locationDropdownSelected = $state("Location");
+
+
+    let locations = {
+        'Backlog' : backlogTasks,
+        'Sprint' : sprintTasks,
+        'In-progress (IP)' : inProgressTasks,
+        'Done' : doneTasks
+
+    }
+
+    function addTask(){
+        locations[locationDropdownSelected].push(taskName)
+    }
+
+    function handleAction(){
+        if(actionDropdownSelected==='Add')
+            addTask()
+        
+
+    }
     
 </script>
 <h1 class="uppercase text-3xl font-bold text-center m-5">Kanban</h1>
 
-<!-- Kanban board -->
-<div class="border border-red-500 grid grid-cols-5 gap-1">
+<!-- Kanban board v1-->
+<div class="hidden border border-red-500 grid grid-cols-5 gap-1">
 
     <!-- BACKLOG -->
-    <div class="border border-black text-center">
+    <!-- <div class="border border-black text-center">
         <h1 class="uppercase font-bold text-2xl">Backlog</h1>
         
         <div class="border border-black flex flex-col items-center">
@@ -38,10 +68,10 @@
                 <p class="text-gray-600 text-xs">Task description here...</p>
             </Card> 
         </div>
-    </div>
+    </div> -->
 
     <!-- SPRINT -->
-    <div class="border border-black text-center">
+    <!-- <div class="border border-black text-center">
         <h1 class="uppercase font-bold text-2xl">Sprint</h1>
         
         <div class="border border-black flex flex-col items-center">
@@ -54,10 +84,10 @@
                 <p class="text-gray-600 text-xs">Task description here...</p>
             </Card>
         </div>
-    </div>
+    </div> -->
 
     <!-- IN PROGRESS -->
-    <div class="border border-black text-center">
+    <!-- <div class="border border-black text-center">
         <h1 class="uppercase font-bold text-2xl">In Progress</h1>
         
         <div class="border border-black flex flex-col items-center">
@@ -74,10 +104,10 @@
                 <p class="text-gray-600 text-xs">Task description here...</p>
             </Card>
         </div>
-    </div>
+    </div> -->
 
     <!-- IN REVIEW -->
-    <div class="border border-black text-center">
+    <!-- <div class="border border-black text-center">
         <h1 class="uppercase font-bold text-2xl">In Review</h1>
         
         <div class="border border-black flex flex-col items-center">
@@ -90,10 +120,10 @@
                 <p class="text-gray-600 text-xs">Task description here...</p>
             </Card>
         </div>
-    </div> 
+    </div>  -->
 
     <!-- COMPLETED -->
-    <div class="border border-black">
+    <!-- <div class="border border-black">
         <h1 class="uppercase font-bold text-2xl text-center">Done</h1>
         
         <div class="border border-black flex flex-col items-center">
@@ -151,5 +181,136 @@
 
 
 
-    </div> 
+    </div>  -->
+</div>
+
+
+
+<!-- Kanban board v2-->
+<div class='w-8/9 mx-auto'>
+
+    <!-- BACKLOG -->
+    <Accordion>
+
+        <AccordionItem>
+            {#snippet header()}<RectangleListOutline/> BACKLOG - [{backlogTasks.length}]{/snippet}
+            {#each backlogTasks as task}
+
+                <Card class='m-2 w-5/6 p-2'>
+                    <h1 class="font-bold">{task}</h1>
+                    <!-- <p class="text-gray-600 text-xs">task.description</p> -->
+                    </Card>
+            {/each}
+        
+        </AccordionItem>
+
+    
+        <AccordionItem>
+            {#snippet header()}<ClipboardListOutline /> SPRINT - [{sprintTasks.length}] {/snippet}
+            {#each sprintTasks as task}
+
+                <Card class='m-2 w-5/6 p-2'>
+                    <h1 class="font-bold">{task}</h1>
+                    <!-- <p class="text-gray-600 text-xs">task.description</p> -->
+                    </Card>
+            {/each}
+        </AccordionItem>
+    
+
+        <AccordionItem>
+            {#snippet header()}<ClockOutline/> IN-PROGRESS (IP) - [{inProgressTasks.length}] {/snippet}
+            {#each inProgressTasks as task}
+
+                <Card class='m-2 w-5/6 p-2'>
+                    <h1 class="font-bold">{task}</h1>
+                    <!-- <p class="text-gray-600 text-xs">task.description</p> -->
+                    </Card>
+            {/each}
+    
+        </AccordionItem>
+
+
+        <AccordionItem >
+            {#snippet header()} <CheckCircleOutline/> DONE - [{doneTasks.length}] {/snippet}
+            {#each doneTasks as task}
+
+                <Card class='m-2 w-5/6 p-2'>
+                    <h1 class="font-bold">{task}</h1>
+                    <!-- <p class="text-gray-600 text-xs">task.description</p> -->
+                    </Card>
+            {/each}
+        </AccordionItem>
+
+    </Accordion>
+</div>
+
+<!-- Input section -->
+<div class="my-5 mx-5 flex gap-2 items-baseline justify-center">
+
+    <div>
+        <Button size='xs' class='w-fit p-1'>
+            {actionDropdownSelected} <ChevronDownOutline size='sm'/>
+        </Button>
+        <Dropdown simple>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (actionDropdownSelected = "Add")}>
+                Add
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (actionDropdownSelected = "Delete")}>
+                Delete
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (actionDropdownSelected = "Complete")}>
+                Complete
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (actionDropdownSelected = "Edit")}>
+                Edit
+            </DropdownItem>
+
+            <DropdownDivider />
+
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (actionDropdownSelected = "Action")}>
+                CANCEL
+            </DropdownItem>
+
+            
+        </Dropdown>
+    </div>
+
+    <div class='w-3/4'>
+        <Input clearable placeholder="Type task here..." size='sm' class='ps-9' bind:value={taskName}> 
+            {#snippet left()}
+                <PlusOutline class="h-6 w-6 text-gray-500 dark:text-gray-400" />
+            {/snippet}
+            {#snippet right()}
+                <Button size="xs" class='w-fit p-0.5' onclick={()=>{handleAction()}}>
+                    Add    
+                </Button>
+            {/snippet}
+
+        </Input>
+    </div>
+
+    <div>
+        <Button size='xs' class='w-fit p-1'>
+            {locationDropdownSelected} <ChevronDownOutline size='sm'/>
+        </Button>
+        <Dropdown simple>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (locationDropdownSelected = "Backlog")}>
+                Backlog
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (locationDropdownSelected = "Sprint")}>
+                Sprint
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (locationDropdownSelected = "In-progress (IP)")}>
+                In-progress (IP)
+            </DropdownItem>
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (locationDropdownSelected = "Done")}>
+                Done
+            </DropdownItem>
+            <DropdownDivider />
+            <DropdownItem class='hover:bg-gray-100 dark:hover:bg-gray-600' onclick={() => (locationDropdownSelected = "Location")}>
+                CANCEL
+            </DropdownItem>
+        </Dropdown>
+    </div>
+
 </div>
